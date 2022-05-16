@@ -174,6 +174,12 @@ FastQ形式の解説についてはWikipediaにも記載がありますが、こ
 ならないバッファサイズが固定長で済むので、無制限に長い行に対応する読み込み機能を
 作るよりは遥かに簡単で、バッファオーバーランなどのメモリのアクセス違反の懸念も無いので安全です。
 
+なお、現在ではPacBioやNanoporeなどのlong read sequencerのデータも増えてきたこともあり、
+1行が数MBもあるようなFastQファイルを目にすることも増えました。そのようなデータでも
+PythonやJavaなら簡単に読み込めるので多くの場合は問題ありませんが、C言語の場合には
+char buf[256]のようにのんきにバッファを用意しておくだけでは全く足りなので、可変長配列の
+ようなものを当てがって読み込む仕組みを作る必要があるので少々大変です。
+
 ```
 @FSRRS4401EG0ZW_4 [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]
 tcagTTTTGATCTTTTAATAATGAATTTTAATGTGTTAAAATGATTGCATTGATGGCATAACCGCATTTAAATTAATTAC
