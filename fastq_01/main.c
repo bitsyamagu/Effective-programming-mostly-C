@@ -13,7 +13,7 @@ int main(int argc, char** argv){
     char buf[256];
     FastQ data[12];
     int index = 0;
-    while(1){
+    while(1) {
         // name
         char* p = fgets(buf, 256, fp);
         if(p == NULL){

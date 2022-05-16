@@ -13,7 +13,7 @@ int main(int argc, char** argv){
     char buf[256];
     FastQ** list = (FastQ**)malloc(sizeof(FastQ*)*12);
     int index = 0;
-    while(1){
+    while(1) {
         // name
         char* p = fgets(buf, 256, fp);
         if(p == NULL){
@@ -34,6 +34,13 @@ int main(int argc, char** argv){
         index++;
     }
 
+for(int i = 0; i<12; i++){
+        printf("%s", data[i].name);
+        printf("%s", data[i].seq);
+        printf("+\n");
+        printf("%s", data[i].qual);
+    }
+    
     for(int i = 0; i<index; i++){
         free(list[i]);
     }

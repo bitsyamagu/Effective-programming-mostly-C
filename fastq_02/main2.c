@@ -34,6 +34,13 @@ int main(int argc, char** argv){
         index++;
     }
 
+    for(int i = 0; i<12; i++){
+        printf("%s", data[i].name);
+        printf("%s", data[i].seq);
+        printf("+\n");
+        printf("%s", data[i].qual);
+    }
+    
     for(int i = 0; i<index; i++){
         free(list[i]);
     }
