@@ -108,7 +108,7 @@ int main(int argc, char** argv){
 FastQ\* list[12]はポインタの配列でしたが、今回はポインタの配列のメモリを確保するので、FastQ\*型へのポインタ、つまりFastQ\*\*をmalloc()で取得することになります。
 
 ```C
-FastQz\*\* list = (FastQ\*\*)malloc(sizeof(FastQ\*)*12);
+FastQz** list = (FastQ**)malloc(sizeof(FastQ*)*12);
 ```
 この例ではlistに96バイトのメモリがヒープから割り当てられ、スタックにはFastQ*配列の先頭へのポインタが格納されるので、スタックの消費は8バイトだけになります。あとは、12個を400万個に増やしたとしてもスタックの消費量は8バイトのままです。
 
