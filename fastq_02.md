@@ -38,6 +38,13 @@ int main(int argc, char** argv){
         index++;
     }
 
+    for(int i = 0; i<12; i++){
+        printf("%s", list[i]->name);
+        printf("%s", list[i]->seq);
+        printf("+\n");
+        printf("%s", list[i]->qual);
+    }
+
     for(int i = 0; i<index; i++){  // (4)
         free(list[i]);
     }
@@ -92,6 +99,13 @@ int main(int argc, char** argv){
         strcpy(list[index]->qual, buf);
 
         index++;
+    }
+
+    for(int i = 0; i<12; i++){
+        printf("%s", list[i]->name);
+        printf("%s", list[i]->seq);
+        printf("+\n");
+        printf("%s", list[i]->qual);
     }
 
     for(int i = 0; i<index; i++){
