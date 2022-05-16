@@ -35,10 +35,10 @@ int main(int argc, char** argv){
     }
 
     for(int i = 0; i<12; i++){
-        printf("%s", data[i].name);
-        printf("%s", data[i].seq);
+        printf("%s", list[i]->name);
+        printf("%s", list[i]->seq);
         printf("+\n");
-        printf("%s", data[i].qual);
+        printf("%s", list[i]->qual);
     }
     
     for(int i = 0; i<index; i++){
