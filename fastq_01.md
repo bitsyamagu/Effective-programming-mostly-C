@@ -114,7 +114,7 @@ int main(int argc, char** argv){
 clang -std=c11 -o fastq main.c
 ```
 
-以下のようなコマンドで実行できます。ファイルからデータを読み込むだけなので、何もコンソールには出力されません。
+以下のようなコマンドで実行できます。実行するとprintfでFastQのデータがそのまま出力されます。
 ```
 ./fastq test.fq
 ```
