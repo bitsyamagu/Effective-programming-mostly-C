@@ -64,7 +64,9 @@ C言語の文法くらいは覚えた後に、この資料を読んでくださ�
 なお、この資料ではプログラムを高速化する技法については紹介しませんが、著しい低速化を
 招くような現象や、トラブルを起こしやすい問題については折に触れて紹介して
 いきたいと思います。
+
 ----
+
 ## 目次
 1. [メモリに読み込む](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_01.md)
 2. [ヒープメモリを使う](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_02.md)
