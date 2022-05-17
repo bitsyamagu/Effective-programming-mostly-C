@@ -57,7 +57,7 @@ int main(int argc, char** argv){
 VisualStudio codeを利用して変更点だけを見ると次のような箇所だけです。
 ![img](images/diff_main_main2.png)
 
-1. FastQ list[12] はポインタの配列 FastQ* list[12]に
+1. FastQ data[12] はポインタの配列 FastQ* list[12]に
 1. list[index] = (FastQ\*)malloc(sizeof(FastQ))で1個ずつメモリを確保
 1. list[index].nameは、list[index]->nameに
 1. free(list[i])で構造体用のメモリを解放
