@@ -201,7 +201,7 @@ void func(){
 ```C
 void func(int x){
    char* ch = malloc(10);
-   if(x==2){
+   if(x==2){ // 仕様変更のため後任者が挿入
        return;
    }
    // do something
