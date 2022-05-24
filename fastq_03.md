@@ -130,3 +130,6 @@ int main(int argc, char** argv){
     return 0;
 }
 ```
+今回も前回とのコードの変更点をVisualStudio codeで差分として確認してみましょう。
+
+![img](images/diff_main3_main4.png)
