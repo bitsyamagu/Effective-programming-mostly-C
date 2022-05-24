@@ -323,4 +323,4 @@ FastQ* pop(FastQArray* p){
 参考URL
 
 1. https://towardsdatascience.com/how-lists-in-python-are-optimised-internally-for-better-performance-847c8123b7fa
-  - Pythonでは32ずつ増えていく
+  - Pythonでは4個ずつ増えていく(おそらく64bitの計算機なのでアドレス１個が8バイトで、8*4=32 bytes)
