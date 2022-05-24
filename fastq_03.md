@@ -232,3 +232,18 @@ int main(int argc, char** argv){
 ```
 これも差分を見てみましょう。
 ![img](images/diff_main4_main5.png)
+
+今回のリファクタリングの作業のポイントは以下のようなものです。
+1. FastQArray構造体を作って、そこに配列のポインタを隠し、長さや容量もまとめておきます
+2. FastQArrayの初期化関数 FastQArray_init()の内容をmain()関数から分離します
+3. FastQArrayへの要素の追加はFastQArray_push_back()を通じて行うようにします
+4. 容量のチェックと拡張はFastQArray_ensure()に分離します
+5. メモリの解放はFastQArray_finish()に分離します
+
+変更箇所はやや多くなってしまいましたが、基本的にはコードをコピペして移動して
+関数に分けただけとも言えます。それだけのことですが、main()関数のwhileループ内は
+すっきりして、メモリ管理のロジックは完全に追い出されました。
+
+FastQArray_push_backは、配列の末尾に要素を追加する関数で、全てはこの中で
+自動的にやってくれるので、main()関数だけ見るとPythonのコードのように
+読みやすくなったのではないでしょうか。
