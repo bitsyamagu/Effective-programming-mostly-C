@@ -21,14 +21,9 @@ int main(int argc, char** argv){
             break;
         }
         if(length >= capacity){
-            int new_capacity = capacity * 2;
-            FastQ** new_list = (FastQ**)malloc(sizeof(FastQ*)*new_capacity);
-            memcpy(new_list, list, sizeof(FastQ*) * capacity);
-            free(list);
-            list = new_list;
-            capacity = new_capacity;
+            capacity = capacity * 2;
+            list = (FastQ**)realloc(list, sizeof(FastQ*)*capacity);
         }
-
         list[length] = (FastQ*)malloc(sizeof(FastQ));
 
         strcpy(list[length]->name, buf);
@@ -43,7 +38,7 @@ int main(int argc, char** argv){
 
         length++;
     }
-    
+
     for(int i = 0; i<length; i++){
         printf("%s", list[i]->name);
         printf("%s", list[i]->seq);
