@@ -66,3 +66,70 @@ PerlやPythonでは１行ずつ読み込む処理は簡単に書くことがで�
 ```
 上記の二つは同じような動作をするものの実際にはreallocの方はメモリの後ろの領域に余裕があれば、そのまま使用中の
 メモリを拡張して割り当ててくれるので、その場合はメモリのコピーが発生しないので、より効率が良いとされています。
+
+## ポインタの配列の場合
+
+これまでは12本までのリードしか読み込めないプログラムでしたが、以下のようにrealloc()でメモリを確保しなおせば
+もっとたくさんのリードを読み込むことができます。下記の例では最初はバッファサイズは2ですが、足りなくなると
+自動的に２倍に拡張する仕組みにしています。
+```C
+#include<string.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct {
+    char name[256];
+    char seq[256];
+    char qual[256];
+} FastQ;
+
+int main(int argc, char** argv){
+    FILE* fp = fopen(argv[1], "r");
+    char buf[256];
+    FastQ** list = (FastQ**)malloc(sizeof(FastQ*)*2);
+    int capacity = 2;
+    int length = 0;
+    while(1) {
+        // name
+        char* p = fgets(buf, 256, fp);
+        if(p == NULL){
+            break;
+        }
+        if(length >= capacity){
+            capacity = capacity * 2;
+            list = (FastQ**)realloc(list, sizeof(FastQ*)*capacity);
+        }
+
+        list[length] = (FastQ*)malloc(sizeof(FastQ));
+
+        strcpy(list[length]->name, buf);
+        // seq
+        fgets(buf, 256, fp);
+        strcpy(list[length]->seq, buf);
+        // +
+        fgets(buf, 256, fp);
+        // qual
+        fgets(buf, 256, fp);
+        strcpy(list[length]->qual, buf);
+
+        length++;
+    }
+
+    for(int i = 0; i<length; i++){
+        printf("%s", list[i]->name);
+        printf("%s", list[i]->seq);
+        printf("+\n");
+        printf("%s", list[i]->qual);
+    }
+
+    for(int i = 0; i<length; i++){
+        free(list[i]);
+    }
+    free(list);
+
+    return 0;
+}
+```
+今回も前回とのコードの変更点をVisualStudio codeで差分として確認してみましょう。
+
+![img](images/diff_main3_main4.png)
