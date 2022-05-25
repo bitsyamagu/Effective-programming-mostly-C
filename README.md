@@ -70,5 +70,5 @@ C言語の文法くらいは覚えた後に、この資料を読んでくださ�
 ## 目次
 1. [メモリに読み込む](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_01.md)
 2. [ヒープメモリを使う](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_02.md)
-3. [伸びる配列 - 可変長配列](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
-4. 
+3. [伸びる配列 - 可変長配列その1 Array(Vector)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
+4. [伸びる配列 - 可変長配列その2 Linked list](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
