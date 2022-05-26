@@ -72,3 +72,8 @@ C言語の文法くらいは覚えた後に、この資料を読んでくださ�
 2. [ヒープメモリを使う](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_02.md)
 3. [伸びる配列 - 可変長配列その1 Array(Vector)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
 4. [伸びる配列 - 可変長配列その2 Linked list](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_04.md)
+
+## より良いコーディング
+1. Standards (標準)に準拠する
+2. エラーに備える
+3. Segmentation faultに対応する
