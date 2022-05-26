@@ -21,8 +21,6 @@ typedef struct {
     char qual[256];
 } FastQ;
 
-#define INITIAL_FQ_ARRAY_CAPACITY 2
-
 typedef struct FastQNode {
     FastQ* value;
     struct FastQNode* next;
