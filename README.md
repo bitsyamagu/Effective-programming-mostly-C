@@ -52,7 +52,7 @@ C言語といえば、必ずといっていいほど「C言語のプログラミ
 計算中に予期しないエラーが起きても原因の究明が困難になっているのではないでしょうか。
 
 PythonでもPerlでも、この資料で学んだことはきっと役に立つでしょう。PythonやPerlは
-便利な反面、様々な技術的な詳細が覆い隠されているので、そこに問題が潜んでいるような
+便利な反面、様々な技術的な詳細が覆い隠されているので、そこに潜んでいるような
 問題を解決するにはその詳細について理解している必要があるのです。
 
 ## 対象とする読者と前提として必要な知識
@@ -89,3 +89,10 @@ diffコマンドでお手本と比較してみてください。そしてコン�
 ## 目次
 1. [メモリに読み込む](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_01.md)
 2. [ヒープメモリを使う](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_02.md)
+3. [伸びる配列 - 可変長配列その1 Array(Vector)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
+4. [伸びる配列 - 可変長配列その2 Linked list](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_04.md)
+
+## より良いコーディング
+1. Standards (標準)に準拠する
+2. エラーに備える
+3. Segmentation faultに対応する

@@ -23,10 +23,7 @@ void FastQArray_init(FastQArray* p){
 void FastQArray_ensure(FastQArray* p, int index){
     if(index >= p->capacity){
         int new_capacity = p->capacity * 2;
-        FastQ** new_buf = (FastQ**)malloc(sizeof(FastQ*)*new_capacity);
-        memcpy(new_buf, p->buf, sizeof(FastQ*) * p->capacity);
-        free(p->buf);
-        p->buf = new_buf;
+        p->buf = (FastQ**)realloc(p->buf, sizeof(FastQ*)*new_capacity);
         fprintf(stderr, "old: %d, new %d\n", p->capacity, new_capacity);
         p->capacity = new_capacity;
     }
