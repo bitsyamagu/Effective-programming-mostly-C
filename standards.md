@@ -78,4 +78,4 @@ Portabilityの意味としては「可搬性」の方が近いかもしれませ
    - 標準といっても、セキュリティ上の理由などで数年後に変更を迫られる場合もあります。標準化されたAPIや言語仕様は利用者数も多いので、移行に必要な情報が提供され、移行期限も示されるでしょう。突然動かなくなるような事態は回避できます。
 
 ## References
-[1] Portability of C Programs and the UNIX System, https://www.bell-labs.com/usr/dmr/www/portpap.html
+[1] Portability of C Programs and the UNIX System, 1978. https://www.bell-labs.com/usr/dmr/www/portpap.html
