@@ -234,9 +234,7 @@ Linked Listは配列と比べて以下のような特徴があります。
 Queueは日本語では待ち行列で、実際に処理待ちのデータを入れておくような用途に向いています。
 例えばマルチスレッドのプログラムで、スレッドプールに計算タスクを投入する際、Javaでは
 LinkedBlockingQueueを利用すると計算が入ってくるまでブロックして待たせることができます。
-
-LinkedBlockingQueue
-https://docs.oracle.com/javase/jp/8/docs/api/index.html?java/util/concurrent/BlockingQueue.html
+  -https://docs.oracle.com/javase/jp/8/docs/api/index.html?java/util/concurrent/BlockingQueue.html
 
 - TreeSet (java)
   - 構造は一次元ではなく、ツリー構造ですがトラバースすることで1次元の配列のように使うことができます。
