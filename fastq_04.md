@@ -194,6 +194,8 @@ int main(int argc, char** argv){
 
     return 0;
 }
-
 ```
+
+変更点は以下のような箇所です。
+
 ![img](images/diff_linkedlist1_linkedlist2.png)
