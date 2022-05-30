@@ -90,7 +90,7 @@ int main(int argc, char** argv){
     FastQArray array;
     FastQArray_init(&array);
 
-    whle(1) {
+    while(1) {
         // name
         char* p = fgets(buf_name, 256, fp);
         if(p == NULL){
@@ -114,3 +114,4 @@ int main(int argc, char** argv){
     return 0;
 }
 ```
+![img](images/diff_main5_main6.png)
