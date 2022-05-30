@@ -168,7 +168,7 @@ for x in list:
     print(x.qual)
 ```
 
-
+Java版 Main6.java
 ```Java
 import java.util.ArrayList;
 import java.io.BufferedReader;
