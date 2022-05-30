@@ -53,7 +53,6 @@ FastQ* create_FastQ(char* name, char* seq, char* qual){
     p->name[name_len] = '\0';
     p->seq[seq_len] = '\0';
     p->qual[qual_len] = '\0';
-
     return p;
 }
 

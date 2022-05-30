@@ -46,12 +46,11 @@ int main(int argc, char** argv){
     FastQArray array;
     FastQArray_init(&array);
 
-    int ok = 1;
-    do {
+    while(1) {
         // name
         char* p = fgets(buf, 256, fp);
         if(p == NULL){
-            ok = 0;
+            break;
         }else {
             FastQ* fq = (FastQ*)malloc(sizeof(FastQ));
 
@@ -67,7 +66,7 @@ int main(int argc, char** argv){
 
             FastQArray_push_back(&array, fq);
         }
-    }while(ok);
+    }
 
     for(int i = 0; i<array.length; i++){
         printf("%s", array.buf[i]->name);
@@ -75,7 +74,6 @@ int main(int argc, char** argv){
         printf("+\n");
         printf("%s", array.buf[i]->qual);
     }
-
     FastQArray_finish(&array);
 
     return 0;
