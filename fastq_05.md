@@ -21,6 +21,21 @@ typedef struct {
 } FastQ;
 ```
 
+main5.c次のように修正してmain6.cを作成します。上のようなFastQ構造体の修正も
+合わせて行って下さい。
+
+![img](images/diff_main5_main6.png)
+
+変更箇所の要点は以下の通りです。
+- 構造体のメンバーを文字配列から文字列のポインタに変更
+- FastQの生成がやや複雑になるのでcreate_FastQ関数に処理を移動
+- create_FastQ関数では以下の処理を行います
+  - 文字列の長さを調べ
+  - 必要量のメモリを割り当て
+  - 一時バッファから割り当てたメモリにデータをコピー、ただし改行文字は除く
+  - 行末の改行文字のあった位置にヌル文字を入れる
+- 出力時に改行文字の出力を追加
+
 main6.c
 ```C
 #include<string.h>
@@ -114,4 +129,90 @@ int main(int argc, char** argv){
     return 0;
 }
 ```
-![img](images/diff_main5_main6.png)
+
+これで一時バッファを除けば、文字の配列はほとんどなくなって、
+データのほとんどがヒープ上のポインタとして保持するように
+なりました。
+
+このようなメモリ上でのデータの持ち方は、PythonやJavaでは
+最も基本的なものです。
+
+上記のmain6.cと同等のコードをPythonとJavaで書くと以下のようになります。
+
+Pyton版 main6.py
+```python
+import os
+
+class FastQ:
+    def __init__(this, name, seq, qual):
+        this.name = name
+        this.seq = seq
+        this.qual = qual
+    def __gt__(this, entry2):
+        if this.chr_index != entry2.chr_index:
+            return this.chr_index > entry2.chr_index
+        if this.txStart != entry2.txStart:
+            return this.txStart > entry2.txStart
+        return this.txEnd > entry2.txEnd
+
+list = []
+
+with open("test.fastq", "r") as fp:
+    while True:
+        name = fp.readline().rstrip(os.linesep)
+        if name == "":
+            break
+        seq = fp.readline().rstrip(os.linesep)
+        dummy = fp.readline().rstrip(os.linesep)
+        qual = fp.readline().rstrip(os.linesep)
+        list.append(FastQ(name, seq, qual))
+
+for x in list:
+    print(x.name)
+    print(x.seq)
+    print("+")
+    print(x.qual)
+```
+
+
+```Java
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Main6 {
+    static public class FastQ {
+        String name;
+        String seq;
+        String qual;
+        public FastQ(String n, String s, String q){
+            name = n;
+            seq = s;
+            qual = q;
+        }
+    }
+    public static void main(String[] argv){
+        ArrayList<FastQ> list = new ArrayList<>();
+        try  {
+            BufferedReader br = new BufferedReader(new FileReader(argv[0]));
+            while(true){
+                String name = br.readLine();
+                String seq = br.readLine();
+                br.readLine();
+                String qual = br.readLine();
+                if(name == null){
+                    break;
+                }
+                FastQ fq = new FastQ(name, seq, qual);
+                list.add(fq);
+            }
+            for(FastQ fq: list){
+                System.out.println(fq.name + "\n" + fq.seq + "\n+\n" + fq.qual + "\n");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+```
