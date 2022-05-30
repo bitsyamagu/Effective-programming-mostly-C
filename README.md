@@ -84,6 +84,7 @@ diffコマンドでお手本と比較してみてください。そしてコン�
 どのようなエラーメッセージがどのようなエラーに対して出るのかを
 知っておくと、実際に後でそのようなエラーに遭遇したときに
 役立つでしょう。
+
 ----
 
 ## 目次
@@ -91,8 +92,10 @@ diffコマンドでお手本と比較してみてください。そしてコン�
 2. [ヒープメモリを使う](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_02.md)
 3. [伸びる配列 - 可変長配列その1 Array(Vector)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
 4. [伸びる配列 - 可変長配列その2 Linked list](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_04.md)
+5. [より洗練されたメモリの構造](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_05.md)
 
 ## より良いコーディング
 1. Standards (標準)に準拠する
 2. エラーに備える
 3. Segmentation faultに対応する
+
