@@ -203,7 +203,7 @@ old: 8, new 16
 しまいました。これはリード名の比較に使用しているstrcmpが辞書順の比較をするためです。
 これを番号順としてソートするには、以下のような関数を作成して番号で比較してやると良いでしょう。
 
-<img src="images/diff_main8_main9.png/>
+<img src="images/diff_main8_main9.png"/>
 
 * sscanf
   - sscanf関数は、文字列バッファから指定した変数を読み取る関数です。文字列から数字を取り出す関数には
