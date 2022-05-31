@@ -21,6 +21,21 @@ typedef struct {
 } FastQ;
 ```
 
+main5.c次のように修正してmain6.cを作成します。上のようなFastQ構造体の修正も
+合わせて行って下さい。
+
+![img](images/diff_main5_main6.png)
+
+変更箇所の要点は以下の通りです。
+- 構造体のメンバーを文字配列から文字列のポインタに変更
+- FastQの生成がやや複雑になるのでcreate_FastQ関数に処理を移動
+- create_FastQ関数では以下の処理を行います
+  - 文字列の長さを調べ
+  - 必要量のメモリを割り当て
+  - 一時バッファから割り当てたメモリにデータをコピー、ただし改行文字は除く
+  - 行末の改行文字のあった位置にヌル文字を入れる
+- 出力時に改行文字の出力を追加
+
 main6.c
 ```C
 #include<string.h>
@@ -114,4 +129,166 @@ int main(int argc, char** argv){
     return 0;
 }
 ```
-![img](images/diff_main5_main6.png)
+
+これで一時バッファを除けば、文字の配列はほとんどなくなって、
+データのほとんどがヒープ上のポインタとして保持するように
+なりました。
+
+このようなメモリ上でのデータの持ち方は、PythonやJavaでは
+最も基本的なものです。
+
+上記のmain6.cと同等のコードをPythonとJavaで書くと以下のようになります。
+
+Pyton版 main6.py
+```python
+import os
+
+class FastQ:
+    def __init__(this, name, seq, qual):
+        this.name = name
+        this.seq = seq
+        this.qual = qual
+
+list = []
+
+with open("test.fastq", "r") as fp:
+    while True:
+        name = fp.readline().rstrip(os.linesep)
+        if name == "":
+            break
+        seq = fp.readline().rstrip(os.linesep)
+        dummy = fp.readline().rstrip(os.linesep)
+        qual = fp.readline().rstrip(os.linesep)
+        list.append(FastQ(name, seq, qual))
+
+for x in list:
+    print(x.name)
+    print(x.seq)
+    print("+")
+    print(x.qual)
+```
+
+Java版 Main6.java
+```Java
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Main6 {
+    static public class FastQ {
+        String name;
+        String seq;
+        String qual;
+        public FastQ(String n, String s, String q){
+            name = n;
+            seq = s;
+            qual = q;
+        }
+    }
+    public static void main(String[] argv){
+        ArrayList<FastQ> list = new ArrayList<>();
+        try  {
+            BufferedReader br = new BufferedReader(new FileReader(argv[0]));
+            while(true){
+                String name = br.readLine();
+                String seq = br.readLine();
+                br.readLine();
+                String qual = br.readLine();
+                if(name == null){
+                    break;
+                }
+                FastQ fq = new FastQ(name, seq, qual);
+                list.add(fq);
+            }
+            for(FastQ fq: list){
+                System.out.println(fq.name + "\n" + fq.seq + "\n+\n" + fq.qual + "\n");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+メイン関数だけをこの3つのプログラムで比較してみるとどうでしょうか？
+非常によく似ているのではないでしょうか。また、C言語では自分で
+可変長配列を用意してやる必要がありましたが、PythonやJavaでは標準ライブラリに
+もともと備わっていて作る必要がないので、そのぶんだけ非常にシンプルなプログラムで
+済んでいます。
+
+逆にPythonやJavaを使うとシンプルに書けますが、それらをやむなく性能向上のために
+C言語に移植する場合は基本的なプログラムの構造はそのままに、今回の可変長配列のように足りないものを
+作り足してやればほぼそのまま移植できそうです。
+PythonやJavaでメモリが足りなくなりそうだったり、計算速度に不満が出そうだったり、
+あるいはGPU版としてC/C++に移植する可能性のあるコードはあらかじめ
+プログラミング言語間でも移植しやすいコーディングを心がけておくと
+良いでしょう。
+
+ここまでの範囲に登場したポインタは全て文字列や構造体を指すものでした。
+これはPythonとJavaの「参照」と呼ばれるものと全く同じ用法です。
+このようなポインタ(参照)はヒープ上のどこかにあるデータ本体を
+指していて、ポインタはいつもデータ本体の代用品として使われます。
+
+大事なことなので二度書くと「ポインタ(参照)はデータ本体の代用品」です。
+
+> **Not**
+> Javaでもポインタと呼ばれることもあります
+
+なぜデータ本体をそこに置かないのか、というのはもっともな話です。
+最初の方で見た例としては、スタックは8MBしかないからヒープを使う、
+という説明でしたが、スタックのサイズは実はOSの設定で割り当てを
+増やすこともできます。
+
+では、それを大幅に増やすと何が起きるかというと、
+扱うデータ量が多い場合にはスタックの積み降ろしの一回あたりの
+メモリ量が数MBになり、もはやキャッシュメモリには収まらなくて
+メインメモリへのアクセスが頻発することになるはずで、そうなると
+計算の効率が非常に低下するはずです。一般にキャッシュメモリの
+アクセス速度はメインメモリの10倍とも言われているので、10倍程度の
+速度の低下は覚悟が必要かもしれません。
+
+メインメモリは大容量化と価格低下が速いので、一般的なパソコンでも
+32GBや64GB搭載したものも増えてきました。一方、キャッシュメモリは
+というとXeonなどのハイエンドのものでも10MB程度、PCでは4MBから8MBほどのものが多いようです。
+
+一般的にCPUの型番と一緒に表記されるキャッシュはLevel 3キャッシュ(L3 cache)と
+呼ばれるもので、CPUに近い順にLevel 1 キャッシュ、Level 2キャッシュ、Level 3キャッシュが
+内臓されています。速いものほどCPUに近く、容量も小さいので、できるだけ
+使わないデータはキャッシュの外に置いたままにしておいて、
+必要なデータだけを速いキャッシュ入れて使う方が計算は効率的に進みます。
+
+例えばFastQ構造体もリード1本分のデータを構造体に丸ごと入れておくと
+構造体内のリード名へのアクセスがあった際には塩基配列やBaseQualityごと
+キャッシュにロードされてしまいますが、今回のようにポインタとして分離して
+おけば、リード名にアクセスしたときはリード名だけをキャッシュに上げてくれそうです。
+つまり、リード名を使ってソートする場合には、構造体丸ごとよりも4倍以上の数の
+リード名をキャッシュ内で使うことができるはずです。
+
+そして、PythonやJavaではそのようなことを特に意識しなくても
+普通にプログラムを書けばそのように振る舞うように、プログラミング言語が
+デザインされているということでもあります。
+PythonやJavaが使える環境や条件であれば、C/C++は第1の選択肢から外して良いと
+私も思います。
+
+一方、C/C++を第1の選択肢として考えなければならない場合があるとすれば、
+これまでに見てきたような「参照」だけでは済まないポインタの使い方が
+必要となるケースで、そこではポインタの演算などの話が避けられなくなります。
+より具体的には
+- データのシリアライズ/マーシャリングが必要な場合
+  - デバイス上へのデータの永続化や通信のため
+  - GPUデバイス等へのメモリブロックの転送
+- メモリの大量の確保と破棄の繰り返し 
+  - アロケーションのコストが高い場合や、GCが問題になる場合
+
+これらは大雑把に言えば、メモリ上でのデータの保持の仕方を
+コントロールしたい場合ということです。平たく言えば、通信に備えて
+連続したメモリ領域にデータを集めておきたい場合や、
+メモリのアロケーションのように高いコストのシステムコールを
+何十億回も発行して確保・解放するのは無駄なので、
+予め確保しておいたメモリを繰り返し再利用したい場合
+ということになります。
+
+このような状況でなければ、C/C++を使う必要はないのですが、
+ゲノム解析では避けられない問題になってきているようなので、
+後日、紹介できればと思います。
