@@ -205,8 +205,6 @@ old: 8, new 16
 
 <img src="images/diff_main8_main9.png"/>
 
-[main9.c](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_06/main9.c)
-
 * sscanf
   - sscanf関数は、文字列バッファから指定した変数を読み取る関数です。文字列から数字を取り出す関数には
 他にatoiやstrtodなどがあります。今回使用したsscanfやscanf関数はフォーマット付き入力用関数といったような
@@ -230,7 +228,10 @@ old: 8, new 16
     -  a == b なら0を返す
     -  a > bなら正の数を返す
   - readname_cmp関数も比較したい数字を取り出して、上記と同じような返り値を返すようにしました。 
-          
+
+
+[main9.c](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_06/main9.c)
+
 main9.cをコンパイルして実行すると、以下のような結果になりました。これなら期待通りです。
 ```
 old: 2, new 4
