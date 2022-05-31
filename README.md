@@ -92,7 +92,7 @@ diffコマンドでお手本と比較してみてください。そしてコン�
 2. [ヒープメモリを使う](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_02.md)
 3. [伸びる配列 - 可変長配列その1 Array(Vector)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
 4. [伸びる配列 - 可変長配列その2 Linked list](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_04.md)
-5. [より洗練されたメモリの構造](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_05.md)
+5. [よりスマートな構造](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_05.md)
 
 ## より良いコーディング
 1. Standards (標準)に準拠する
