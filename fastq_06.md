@@ -256,3 +256,6 @@ old: 8, new 16
 
 ![image](https://user-images.githubusercontent.com/49506866/171247007-dc1a64c4-75e0-46e1-8f17-908af3f8ecc4.png)
 
+<img src="images/diff_main9_main10.png"/>
+
+[main10.c](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_06/main10.c)
