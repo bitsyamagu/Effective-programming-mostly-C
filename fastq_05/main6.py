@@ -5,12 +5,6 @@ class FastQ:
         this.name = name
         this.seq = seq
         this.qual = qual
-    def __gt__(this, entry2):
-        if this.chr_index != entry2.chr_index:
-            return this.chr_index > entry2.chr_index
-        if this.txStart != entry2.txStart:
-            return this.txStart > entry2.txStart
-        return this.txEnd > entry2.txEnd
 
 list = []
 
