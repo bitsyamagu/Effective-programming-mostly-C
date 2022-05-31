@@ -203,7 +203,7 @@ old: 8, new 16
 しまいました。これはリード名の比較に使用しているstrcmpが辞書順の比較をするためです。
 これを番号順としてソートするには、以下のような関数を作成して番号で比較してやると良いでしょう。
 
-<img src="images/diff_main8_main9.png/>
+<img src="images/diff_main8_main9.png"/>
 
 * sscanf
   - sscanf関数は、文字列バッファから指定した変数を読み取る関数です。文字列から数字を取り出す関数には
@@ -222,6 +222,40 @@ old: 8, new 16
          exit(-1);
      }
 ```
-                                                
-    
-          
+* strcmp
+  - strcmpはstrcmp(a, b)のように呼ばれた時、以下のような値を返します。
+    -  a < bなら負の数を返す
+    -  a == b なら0を返す
+    -  a > bなら正の数を返す
+  - readname_cmp関数も比較したい数字を取り出して、上記と同じような返り値を返すようにしました。 
+
+
+[main9.c](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_06/main9.c)
+
+main9.cをコンパイルして実行すると、以下のような結果になりました。これなら期待通りです。
+```
+old: 2, new 4
+old: 4, new 8
+old: 8, new 16
+@SRR8206481.1 1/1
+@SRR8206481.2 2/1
+@SRR8206481.3 3/1
+@SRR8206481.4 4/1
+@SRR8206481.5 5/1
+@SRR8206481.6 6/1
+@SRR8206481.7 7/1
+@SRR8206481.8 8/1
+@SRR8206481.9 9/1
+@SRR8206481.10 10/1
+@SRR8206481.11 11/1
+@SRR8206481.12 12/1
+```
+でも、ちょっと待ってください。このままでは、比較のたびにscanfを含むreadname_cmp関数が呼ばれることになるので、
+効率が悪そうです。もっと効率的に比較できるようにFastQ構造体に次のようにindexのフィールドを追加して
+そこに番号を入れておいて比較に使いましょう。
+
+![image](https://user-images.githubusercontent.com/49506866/171247007-dc1a64c4-75e0-46e1-8f17-908af3f8ecc4.png)
+
+<img src="images/diff_main9_main10.png"/>
+
+[main10.c](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_06/main10.c)
