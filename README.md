@@ -93,7 +93,8 @@ diffコマンドでお手本と比較してみてください。そしてコン�
 3. [伸びる配列 - 可変長配列その1 Array(Vector)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_03.md)
 4. [伸びる配列 - 可変長配列その2 Linked list](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_04.md)
 5. [よりスマートな構造](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_05.md)
-
+6. [並び替え(ソート)](https://github.com/bitsyamagu/Effective-programming-mostly-C/blob/master/fastq_06.md)
+ 
 ## より良いコーディング
 1. Standards (標準)に準拠する
 2. エラーに備える
