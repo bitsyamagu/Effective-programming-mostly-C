@@ -38,3 +38,16 @@ SRAのソートとイルミナのソートを切り替えられるようにし�
 cmp_index()という名前で独立させます。
 <img src="images/diff_main10_main11.png">
           
+また、リード名の比較はバブルソートのアルゴリズム内で行なっているわけですが
+そこにイルミナ
+
+```C
+void bubble_sort(FastQArray* array){
+  ...（略)...
+  if(イルミナの場合){
+     // illumina read名の比較
+  }else if(SRAの場合){
+     //  SRA read名の比較
+  }
+  ...（略)...
+```
