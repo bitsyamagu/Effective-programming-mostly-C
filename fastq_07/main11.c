@@ -3,123 +3,60 @@
 #include<stdlib.h>
 #include <assert.h>
 
-typedef struct {
-    char* name;
-    char* seq;
-    char* qual;
-    int index;
-} FastQ;
+#include "sra_fastq.h"
+#include "illumina_fastq.h"
 
-#define INITIAL_FQ_ARRAY_CAPACITY 2
-typedef struct {
-    FastQ** buf;
-    int capacity;
-    int length;
-} FastQArray;
+#include "fastq_array.h"
 
-void FastQArray_init(FastQArray* p){
-    p->buf = (FastQ**)malloc(sizeof(FastQ*)*INITIAL_FQ_ARRAY_CAPACITY);
-    p->capacity = INITIAL_FQ_ARRAY_CAPACITY;
-    p->length = 0;
-}
-void FastQArray_ensure(FastQArray* p, int index){
-    if(index >= p->capacity){
-        int new_capacity = p->capacity * 2;
-        p->buf = (FastQ**)realloc(p->buf, sizeof(FastQ*)*new_capacity);
-        fprintf(stderr, "old: %d, new %d\n", p->capacity, new_capacity);
-        p->capacity = new_capacity;
-    }
-}
-void FastQArray_push_back(FastQArray* p, FastQ* fq){
-    FastQArray_ensure(p, p->length+1);
-    p->buf[p->length] = fq;
-    p->length++;
-}
-int parse_index(char* a){
-    char dummy[256];
-    int a_num = 0;
-    int a_den = 0;
-    int a_count = sscanf(a, "%s %d/%d", dummy, &a_num, &a_den);
-    assert(a_count == 3);
-    return a_num;
-}
-int cmp_index(const void* p1, const void* p2) {
-    FastQ** fq1 = (FastQ**)p1;
-    FastQ** fq2 = (FastQ**)p2;
-    return (*fq1)->index - (*fq2)->index;
-}
-void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void* p1, const void* p2)){
-    int swapped = 1;
-    while(swapped){
-        swapped = 0;
-        for(int i = 0; i<array->length-1; i++){
-            if(usr_cmp_func(&array->buf[i], &array->buf[i+1]) > 0){
-                FastQ* tmp = array->buf[i];
-                array->buf[i] = array->buf[i+1];
-                array->buf[i+1] = tmp;
-                swapped = 1;
-            }
-        }
-    }
-}
-
-void FastQArray_sort(FastQArray* array){
-    bubble_sort(array, cmp_index);
-}
-void FastQArray_finish(FastQArray* p){
-    for(int i = 0; i<p->length; i++){
-        free(p->buf[p->length]);
-    }
-    free(p->buf);
-}
-FastQ* create_FastQ(char* name, char* seq, char* qual){
-    FastQ* p = (FastQ*)malloc(sizeof(FastQ));
-    int name_len = strlen(name);
-    int seq_len = strlen(seq);
-    int qual_len = strlen(qual);
-    p->name = (char*) malloc(sizeof(char)*name_len);
-    p->seq = (char*) malloc(sizeof(char)*seq_len);
-    p->qual = (char*) malloc(sizeof(char)*qual_len);
-    strncpy(p->name, name, name_len-1);
-    strncpy(p->seq, seq, seq_len-1);
-    strncpy(p->qual, qual, qual_len-1);
-    p->name[name_len] = '\0';
-    p->seq[seq_len] = '\0';
-    p->qual[qual_len] = '\0';
-    p->index = parse_index(p->name);
-    return p;
-}
 
 int main(int argc, char** argv){
     FILE* fp = fopen(argv[1], "r");
-    char buf_name[256];
-    char buf_seq[256];
-    char buf_qual[256];
-    FastQArray array;
-    FastQArray_init(&array);
+    FastQArray sra;
+    FastQArray_init(&sra);
+    FastQArray illumina;
+    FastQArray_init(&illumina);
 
-    while(1) {
-        // name
-        char* p = fgets(buf_name, 256, fp);
-        if(p == NULL){
-            break;
-        }
-        fgets(buf_seq, 256, fp);
-        fgets(buf_qual, 256, fp); // dummy
-        fgets(buf_qual, 256, fp);
-        FastQ* fq = create_FastQ(buf_name, buf_seq, buf_qual);
-        FastQArray_push_back(&array, fq);
+    SRAFastQ* sfq = NULL;
+
+    fprintf(stderr, "sra reading\n");
+    while(NULL != (sfq = readSRAFastQ(fp))) {
+        FastQArray_push_back(&sra, sfq);
     }
+    fclose(fp);
 
     // sort
-    FastQArray_sort(&array);
-    for(int i = 0; i<array.length; i++){
-        printf("%s\n", array.buf[i]->name);
-        printf("%s\n", array.buf[i]->seq);
-        printf("+\n");
-        printf("%s\n", array.buf[i]->qual);
-    }
-    FastQArray_finish(&array);
+    fprintf(stderr, "sra sorting\n");
+    FastQArray_sort(&sra, sra_read_comparison);
 
+    for(int i = 0; i<sra.length; i++){
+        SRAFastQ* fq = (SRAFastQ*)sra.buf[i];
+        printf("%s\n", fq->name);
+        printf("%s\n", fq->seq);
+        printf("+\n");
+        printf("%s\n", fq->qual);
+    }
+    FastQArray_finish(&sra);
+    fprintf(stderr, "sra finish\n");
+
+    fprintf(stderr, "illumina reading\n");
+    IlluminaFastQ* ifq = NULL;
+    fp = fopen(argv[2], "r");
+    while(NULL != (ifq = readIlluminaFastQ(fp))) {
+        FastQArray_push_back(&illumina, ifq);
+    }
+    fclose(fp);
+
+    // sort
+    fprintf(stderr, "illumina sorting\n");
+    FastQArray_sort(&illumina, illumina_read_comparison);
+    for(int i = 0; i<illumina.length; i++){
+        SRAFastQ* fq = (SRAFastQ*)illumina.buf[i];
+        printf("%s\n", fq->name);
+        printf("%s\n", fq->seq);
+        printf("+\n");
+        printf("%s\n", fq->qual);
+    }
+    FastQArray_finish(&illumina);
+    fprintf(stderr, "illumina finish\n");
     return 0;
 }
