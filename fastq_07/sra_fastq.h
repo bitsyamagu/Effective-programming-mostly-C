@@ -19,4 +19,9 @@ int SRAFastQ_parse_index(char* read_name);
  */
 SRAFastQ* readSRAFastQ(FILE* fp);
 
+/**
+ * @param p1 first element for comparison, its type is SRAFastQ*
+ * @param p2 sedond element for comparison, its type is SRAFastQ*
+ * @return result of comparison
+ */
 int sra_read_comparison(const void* fq1, const void* fq2);
