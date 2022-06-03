@@ -27,15 +27,34 @@
 Oprical dupilcationの除去は同一タイル内で、X,Y座標が近いリード同士で
 チェックすることになるはずなので、タイル番号と座標で並び替えておけば十分です。
 
-比較の優先順位としては <strong>tile number &gt; x coordinate &gt; y coordinate</strong>
+イルミナ用のFastQ構造体は以下のようになります。
+```C
+typedef struct {
+    char* name;
+    char* seq;
+    char* qual;
+    uint16_t tile;
+    uint16_t xpos;
+    uint16_t ypos;
+} IlluminaFastQ;
+```
+FastQ構造体も名前を変更してSRAFastQにしましょう。
+```C
+typedef struct {
+    char* name;
+    char* seq;
+    char* qual;
+    uint32_t index;
+} IlluminaFastQ;
+```
+イルミナのリードの比較の優先順位としては <strong>tile number &gt; x coordinate &gt; y coordinate</strong>
 ということになります。
 
-前回実装したバブルソートを改良してこのようなソートを実装しても良いですが、
-違うのは配列名の比較方法だけなので、できるだけ単純な仕組みで、
-SRAのソートとイルミナのソートを切り替えられるようにしようと思います。
+扱うデータの種類は増えますが、可変長配列とソートのアルゴリズムは再利用して、
+SRAのソートとイルミナのソートを簡単に切り替えられるようにしようと思います。
 
 まず、ソートもバブルソートの名前を付けて別の関数bubble_sort()に分離し、比較関数も切り替えやすいように
-cmp_index()という名前で独立させます。
+分離することにします。
           
 リード名の比較はバブルソートのアルゴリズム内で行なっているわけですが
 そこにイルミナのリード名の比較機能を直接追加するとした場合、以下のような
@@ -76,15 +95,64 @@ void bubble_sort(FastQArray* array){
 比較関数内で行っていたものをデータ読み込み時の1回にしてやりましたが、それは
 この比較のコストを小さくしてやったことになります。
 
-以下のような修正は、やや分かりにくいかもしれませんが上記の問題を解決したコードの例になります。
+上記のような問題を解決するため、以下のようなソートや比較の仕組みにします。
 
-<img src="images/diff_main10_main11.png">
+イルミナ用比較関数(illumina_fastq.c)
+```C
+int illumina_read_comparison(const void* fq1, const void* fq2){
+    IlluminaFastQ* p1 = (IlluminaFastQ*)fq1;
+    IlluminaFastQ* p2 = (IlluminaFastQ*)fq2;
+    if(p1->tile != p2->tile){
+        return p1->tile - p2->tile;
+    }else if(p1->xpos != p2->xpos){
+        return p1->xpos - p2->xpos;
+    }else if(p1->ypos != p2->ypos) {
+        return  p1->ypos - p2->ypos;
+    }
+    return 0;
+}
+```
+SRA用比較関数(sra_fastq.c)
+```C
+int sra_read_comparison(const void* fq1, const void* fq2){
+    SRAFastQ* sfq1 = (SRAFastQ*)fq1;
+    SRAFastQ* sfq2 = (SRAFastQ*)fq2;
+    return sfq1->index - sfq2->index;
+}
+```
 
-- comp_index(): SRAのリード名比較用関数
-  - p1とp2として比較したい構造体のポインタのポインタを二つ受け取り、indexを比較した結果を返します
-    - 「ポインタのポインタ」でも良いのですが、標準ライブラリにも使えるようにqsort()に渡す比較用関数と同じ関数シグニチャにしています
-    - 
+- comp_index(): リード名比較用関数
+  - p1とp2として比較したい構造体のポインタのポインタを二つ受け取り、比較した結果を返します
+    - 引数の型はSRAFastQ*やIlluminaFastQ*でも良いのですが、標準ライブラリにも使えるようにqsort()に渡す比較用関数と同じ関数シグニチャにしています
 
+ソート関数部分(fastq_array.c)
+```C
+// private
+void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)){
+    int swapped = 1;
+    while(swapped){
+        swapped = 0;
+        for(int i = 0; i<array->length-1; i++){
+            if(usr_cmp_func(array->buf[i], array->buf[i+1]) > 0){
+                void* tmp = array->buf[i];
+                array->buf[i] = array->buf[i+1];
+                array->buf[i+1] = tmp;
+                swapped = 1;
+            }
+        }
+    }
+}
+
+void FastQArray_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)){
+    bubble_sort(array, usr_cmp_func);
+    //  qsort(array->buf, array->length, sizeof(FastQ*), usr_cmp_func);
+}
+```
+ソート関数はデフォルトではこれまでに作成したバブルソートを呼ぶように
+しておきます。バブルソートはソート済みデータが入ってきた場合には
+比較回数が少ないアルゴリズムですが、主に未ソートのデータが入ってくる想定の
+場合はクイックソートなどの方が良いでしょう。クイックソートは標準ライブラリに
+組み込まれているので、そこにコメントアウトしているもののように呼びだすことができます。
 
 > **Note**
 > 関数シグニチャ: 関数は、「関数名」と「引数の数と種類」、そして「返り値」の3つセットで定義されます。
