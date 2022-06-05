@@ -45,7 +45,7 @@ typedef struct {
     char* seq;
     char* qual;
     uint32_t index;
-} IlluminaFastQ;
+} SRAFastQ;
 ```
 イルミナのリードの比較の優先順位としては <strong>tile number &gt; x coordinate &gt; y coordinate</strong>
 ということになります。
