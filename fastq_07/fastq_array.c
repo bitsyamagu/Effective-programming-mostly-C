@@ -22,15 +22,7 @@ void FastQArray_push_back(FastQArray* p, void* fq){
     p->buf[p->length] = fq;
     p->length++;
 }
-/*
-int FastQArray_parse_index(char* a){
-    char dummy[256];
-    int a_num = 0;
-    int a_den = 0;
-    int a_count = sscanf(a, "%s %d/%d", dummy, &a_num, &a_den);
-    assert(a_count == 3);
-    return a_num;
-}*/
+
 // private
 void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)){
     int swapped = 1;

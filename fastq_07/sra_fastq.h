@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <stdint.h>
 
 typedef struct {
     char* name;
     char* seq;
     char* qual;
-    int index;
+    uint32_t index;
 } SRAFastQ;
 
 /**

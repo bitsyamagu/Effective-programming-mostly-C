@@ -16,9 +16,9 @@ typedef struct {
     char* name;
     char* seq;
     char* qual;
-    int16_t tile;
-    int16_t xpos;
-    int16_t ypos;
+    uint16_t tile;
+    uint16_t xpos;
+    uint16_t ypos;
 } IlluminaFastQ;
 
 /**
