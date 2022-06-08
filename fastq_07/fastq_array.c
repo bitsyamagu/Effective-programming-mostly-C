@@ -29,7 +29,7 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
     while(swapped){
         swapped = 0;
         for(int i = 0; i<array->length-1; i++){
-            if(usr_cmp_func(array->buf[i], array->buf[i+1]) > 0){
+            if(usr_cmp_func(&array->buf[i], &array->buf[i+1]) > 0){
                 void* tmp = array->buf[i];
                 array->buf[i] = array->buf[i+1];
                 array->buf[i+1] = tmp;
@@ -40,8 +40,11 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
 }
 
 void FastQArray_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)){
+#if ASSUME_UNSORTED
+    qsort(array->buf, array->length, sizeof(FastQ*), usr_cmp_func);
+#else
     bubble_sort(array, usr_cmp_func);
-    //  qsort(array->buf, array->length, sizeof(FastQ*), usr_cmp_func);
+#endif
 }
 
 void FastQArray_finish(FastQArray* p){

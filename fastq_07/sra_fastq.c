@@ -13,8 +13,8 @@ int SRAFastQ_parse_index(char* a){
 }
 
 int sra_read_comparison(const void* fq1, const void* fq2){
-    SRAFastQ* sfq1 = (SRAFastQ*)fq1;
-    SRAFastQ* sfq2 = (SRAFastQ*)fq2;
+    SRAFastQ* sfq1 = *(SRAFastQ**)fq1;
+    SRAFastQ* sfq2 = *(SRAFastQ**)fq2;
     return sfq1->index - sfq2->index;
 }
 

@@ -19,8 +19,8 @@ char* _read_line(FILE* fp){
 }
 
 int illumina_read_comparison(const void* fq1, const void* fq2){
-    IlluminaFastQ* p1 = (IlluminaFastQ*)fq1;
-    IlluminaFastQ* p2 = (IlluminaFastQ*)fq2;
+    IlluminaFastQ* p1 = *(IlluminaFastQ**)fq1;
+    IlluminaFastQ* p2 = *(IlluminaFastQ**)fq2;
     if(p1->tile != p2->tile){
         return p1->tile - p2->tile;
     }else if(p1->xpos != p2->xpos){
