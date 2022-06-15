@@ -66,7 +66,7 @@ PerlやPythonでは１行ずつ読み込む処理は簡単に書くことがで�
     buf = newbuf;
 ```
 ```C
-    buf = (char*)realloc(capacity+bufsize);
+    buf = (char*)realloc(buf, capacity+bufsize);
 ```
 上記の二つは同じような動作をするものの実際にはreallocの方はメモリの後ろの領域に余裕があれば、そのまま使用中の
 メモリを拡張して割り当ててくれるので、その場合はメモリのコピーが発生しないので、より効率が良いとされています。
