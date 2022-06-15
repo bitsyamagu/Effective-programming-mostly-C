@@ -13,26 +13,29 @@ Pythonなどでは柔軟に文字列の長さに簡単に対応できますが�
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 char* read_line(FILE* fp){
-    int bufsize = 16;
+    int bufsize = 64;
+    char buf[64];
+    char* line = (char*)malloc(bufsize);
     int capacity = bufsize;
-    char* buf = (char*)malloc(bufsize);
-    char* cur = buf;
+    char* cur = line;
     do {
-        char* ret = fgets(cur, bufsize, fp);
+        char* ret = fgets(buf, bufsize, fp);
         if(ret == NULL){
             break;
         }
-        if(memchr(cur, '\0', bufsize) == NULL){ // if incomplete
-            char* newbuf = (char*)malloc(capacity+bufsize);
-            strncpy(newbuf, buf, capacity);
-            free(buf);
-            buf = newbuf;
-            cur = newbuf + capacity - 1; // 次の読み込み開始点のアドレス
+        memcpy(cur, buf, bufsize);
+        if(memchr(buf, '\n', bufsize) == NULL){ // if incomplete
+            char* newline = (char*)malloc(capacity + bufsize);
+            memcpy(newline, line, capacity);
+            free(line);
+            line = newline;
+            cur = newline + capacity - 1;
             capacity = capacity + bufsize;
         }else {
-            return buf;
+            return line;
         }
     }while(1);
 
