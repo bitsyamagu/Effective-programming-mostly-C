@@ -144,8 +144,8 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
 イルミナ用比較関数(illumina_fastq.c)
 ```C
 int illumina_read_comparison(const void* fq1, const void* fq2){
-    IlluminaFastQ* p1 = (IlluminaFastQ*)fq1;
-    IlluminaFastQ* p2 = (IlluminaFastQ*)fq2;
+    IlluminaFastQ* p1 = *(IlluminaFastQ**)fq1;
+    IlluminaFastQ* p2 = *(IlluminaFastQ**)fq2;
     if(p1->tile != p2->tile){
         return p1->tile - p2->tile;
     }else if(p1->xpos != p2->xpos){
@@ -159,8 +159,8 @@ int illumina_read_comparison(const void* fq1, const void* fq2){
 SRA用比較関数(sra_fastq.c)
 ```C
 int sra_read_comparison(const void* fq1, const void* fq2){
-    SRAFastQ* sfq1 = (SRAFastQ*)fq1;
-    SRAFastQ* sfq2 = (SRAFastQ*)fq2;
+    SRAFastQ* sfq1 = *(SRAFastQ**)fq1;
+    SRAFastQ* sfq2 = *(SRAFastQ**)fq2;
     return sfq1->index - sfq2->index;
 }
 ```
