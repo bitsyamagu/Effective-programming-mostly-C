@@ -256,7 +256,7 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
 ```
 > **Note**
 > ```*(IlluminaFastQ**)fq1```はやや難解に見えるかもしれません。わかりやすいように分解すると、まず
-> ```(IlluminaFastQ**)fq1```はvoid*型として渡されてきたfq1はそのままでは型が分からなくて使えないので、
+> ```(IlluminaFastQ**)fq1```はvoid\*型として渡されてきたfq1はそのままでは型が分からなくて使えないので、
 > キャストして```IlluminaFastQ**```型に変換しています。次に*演算子を外からかけて```*((IlluminaFastQ**)fq1)```とすることで
 > ポインタを取り出しています。２行に分けて書くと<BR/>
 > ```IlluminaFastQ** pointer_to_pointer_to_fastq1 = (IlluminaFastQ**)fq1;```<br/>
