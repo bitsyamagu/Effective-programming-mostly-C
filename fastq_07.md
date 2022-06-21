@@ -144,8 +144,8 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
 イルミナ用比較関数(illumina_fastq.c)
 ```C
 int illumina_read_comparison(const void* fq1, const void* fq2){
-    IlluminaFastQ* p1 = *(IlluminaFastQ**)fq1;
-    IlluminaFastQ* p2 = *(IlluminaFastQ**)fq2;
+    IlluminaFastQ* p1 = (IlluminaFastQ*)fq1;
+    IlluminaFastQ* p2 = (IlluminaFastQ*)fq2;
     if(p1->tile != p2->tile){
         return p1->tile - p2->tile;
     }else if(p1->xpos != p2->xpos){
@@ -159,8 +159,8 @@ int illumina_read_comparison(const void* fq1, const void* fq2){
 SRA用比較関数(sra_fastq.c)
 ```C
 int sra_read_comparison(const void* fq1, const void* fq2){
-    SRAFastQ* sfq1 = *(SRAFastQ**)fq1;
-    SRAFastQ* sfq2 = *(SRAFastQ**)fq2;
+    SRAFastQ* sfq1 = (SRAFastQ*)fq1;
+    SRAFastQ* sfq2 = (SRAFastQ*)fq2;
     return sfq1->index - sfq2->index;
 }
 ```
@@ -177,7 +177,7 @@ usr_cmp_func()という関数はリード名の比較を行いますが、これ
  「p1とp2という比較したい構造体のポインタのポインタを二つ受け取り、比較した結果を返す関数」
  という定義をしています。
  
-> ** Note **
+> **Note**
 > 引数の型はSRAFastQ*やIlluminaFastQ*でも良いのですが、標準ライブラリにも使えるようにqsort()に渡す比較用関数と同じvoid*を使用した関数シグニチャにしています
 
 ```C
@@ -208,6 +208,60 @@ void FastQArray_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const vo
 > usr_cmp_funcが関数のポインタ、int(*)(const void*, const void*)の部分は
 > 関数のシグニチャ(英語: function prototype)と呼ばれます。要するにシグニチャは関数から名前を抜いた
 > 「引数の数と種類(入力)」と「返り値(出力)」のみで決定される「関数の型」と考えていただければ良いと思います。
+
+ただし、ちょっと困ったことに標準ライブラリのqsort()関数は比較関数に比較対象データの
+ポインタを渡してくるので、実際のポインタをソートするコードは以下のようになります。
+
+qsort互換イルミナ用比較関数(illumina_fastq.c)
+```C
+int illumina_read_comparison(const void* fq1, const void* fq2){
+    IlluminaFastQ* p1 = *(IlluminaFastQ**)fq1; # ポインタのポインタをデリファレンス
+    IlluminaFastQ* p2 = *(IlluminaFastQ**)fq2;
+    if(p1->tile != p2->tile){
+        return p1->tile - p2->tile;
+    }else if(p1->xpos != p2->xpos){
+        return p1->xpos - p2->xpos;
+    }else if(p1->ypos != p2->ypos) {
+        return  p1->ypos - p2->ypos;
+    }
+    return 0;
+}
+```
+qsort互換SRA用比較関数(sra_fastq.c)
+```C
+int sra_read_comparison(const void* fq1, const void* fq2){
+    SRAFastQ* sfq1 = *(SRAFastQ**)fq1; # ポインタのポインタをデリファレンス
+    SRAFastQ* sfq2 = *(SRAFastQ**)fq2;
+    return sfq1->index - sfq2->index;
+}
+```
+
+qsort互換ソート関数部分(fastq_array.c)
+```C
+// private
+void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)){
+    int swapped = 1;
+    while(swapped){
+        swapped = 0;
+        for(int i = 0; i<array->length-1; i++){
+            if(usr_cmp_func(&array->buf[i], &array->buf[i+1]) > 0){ # アドレス渡しになっている
+                void* tmp = array->buf[i];
+                array->buf[i] = array->buf[i+1];
+                array->buf[i+1] = tmp;
+                swapped = 1;
+            }
+        }
+    }
+}
+```
+> **Note**
+> ```*(IlluminaFastQ**)fq1```はやや難解に見えるかもしれません。わかりやすいように分解すると、まず
+> ```(IlluminaFastQ**)fq1```はvoid*型として渡されてきたfq1はそのままでは型が分からなくて使えないので、
+> キャストして```IlluminaFastQ**```型に変換しています。次に*演算子を外からかけて```*((IlluminaFastQ**)fq1)```とすることで
+> ポインタを取り出しています。２行に分けて書くと<BR/>
+> ```IlluminaFastQ** pointer_to_pointer_to_fastq1 = (IlluminaFastQ**)fq1;```<br/>
+> ```IlluminaFastQ* p1 = *pointer_to_pointer_to_fastq1;```<br>
+> となります。
 
 ここで大事なことは、アルゴリズムなどの外部から瞬時に処理を切り替えられるようにしておくことです。
 このような切り替えはデータの種類が増えた場合だけでなく、CPU vs GPUや、シングルスレッド vs マルチスレッド、
