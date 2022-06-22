@@ -215,7 +215,7 @@ void FastQArray_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const vo
 qsort互換イルミナ用比較関数(illumina_fastq.c)
 ```C
 int illumina_read_comparison(const void* fq1, const void* fq2){
-    IlluminaFastQ* p1 = *(IlluminaFastQ**)fq1; # ポインタのポインタをデリファレンス
+    IlluminaFastQ* p1 = *(IlluminaFastQ**)fq1; // ポインタのポインタをデリファレンス
     IlluminaFastQ* p2 = *(IlluminaFastQ**)fq2;
     if(p1->tile != p2->tile){
         return p1->tile - p2->tile;
@@ -230,7 +230,7 @@ int illumina_read_comparison(const void* fq1, const void* fq2){
 qsort互換SRA用比較関数(sra_fastq.c)
 ```C
 int sra_read_comparison(const void* fq1, const void* fq2){
-    SRAFastQ* sfq1 = *(SRAFastQ**)fq1; # ポインタのポインタをデリファレンス
+    SRAFastQ* sfq1 = *(SRAFastQ**)fq1; // ポインタのポインタをデリファレンス
     SRAFastQ* sfq2 = *(SRAFastQ**)fq2;
     return sfq1->index - sfq2->index;
 }
@@ -244,7 +244,7 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
     while(swapped){
         swapped = 0;
         for(int i = 0; i<array->length-1; i++){
-            if(usr_cmp_func(&array->buf[i], &array->buf[i+1]) > 0){ # アドレス渡しになっている
+            if(usr_cmp_func(&array->buf[i], &array->buf[i+1]) > 0){ // アドレス渡しになっている
                 void* tmp = array->buf[i];
                 array->buf[i] = array->buf[i+1];
                 array->buf[i+1] = tmp;
