@@ -138,6 +138,14 @@ void bubble_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)
 呼ばれるもので、関数(のポインタ)を変数に入れておいて、他の関数の引数として渡したり、
 その中で呼び出させたりできるというものです。
 
+usr_cmp_func()関数はリード名の比較を行いますが、これはポインタなのでusr_cmp_func()関数というものはなく、
+その実体はusr_cmp_funcに代入されているillumina_read_comparisonかsra_read_comparisonです。
+
+「int(*usr_cmp_func)(const void*, const void*)」という引数は複雑に見えるかもしれませんが、
+これで単純に一つの関数の型を定義したものです。これ全体で1個の関数の型なのです。実に長いですが。
+ 「p1とp2という比較したい構造体のポインタのポインタを二つ受け取り、比較した結果を返す関数」
+ という定義をしています。
+
 実際にどのような関数を渡すのかというと、今回の場合は以下のような
 二つの関数です。
 
@@ -165,20 +173,22 @@ int sra_read_comparison(const void* fq1, const void* fq2){
 }
 ```
 
-例えばSRA用の関数をソートに使わせる場合には、次のようにしてソートを呼ぶことになります。
+例えばSRA用の関数をソートに使わせる場合には、次のように関数を渡してソートを呼ぶことになります。
 ```
 bubble_sort(array, sra_read_comparison);
 ```
-usr_cmp_func()という関数はリード名の比較を行いますが、これはポインタなのでusr_cmp_func()関数の実体はなく、
-その実体はusr_cmp_funcに代入されているillumina_read_comparisonかsra_read_comparisonです。
-
-「int(*usr_cmp_func)(const void*, const void*)」という引数は複雑に見えるかもしれませんが、
-単純に一つの関数の型を定義したものです。これ全体で1個の関数の型です。実に長いですが。
- 「p1とp2という比較したい構造体のポインタのポインタを二つ受け取り、比較した結果を返す関数」
- という定義をしています。
  
 > **Note**
 > 引数の型はSRAFastQ*やIlluminaFastQ*でも良いのですが、標準ライブラリにも使えるようにqsort()に渡す比較用関数と同じvoid*を使用した関数シグニチャにしています
+
+> **Note**
+> <strong>関数シグニチャ</strong>: 通常は関数は「関数名」と「引数の数と種類」、そして「返り値」の3つセットで定義されます。
+> ただし、関数を関数のポインタを介して利用する場合は、関数名は違っていても引き数の数と種類と返り値が
+> 同じ関数同士は「同じ型の関数」とみなして同じように呼び出すことができます。このような関数のポインタの定義は
+> int(*usr_cmp_func)(const void* p1, const void* p2)のように書かれ、
+> usr_cmp_funcが関数のポインタ、int(*)(const void*, const void*)の部分は
+> 関数のシグニチャ(英語: function prototype)と呼ばれます。要するにシグニチャは関数から名前を抜いた
+> 「引数の数と種類(入力)」と「返り値(出力)」のみで決定される「関数の型」と考えるとよいでしょう。
 
 ```C
 void FastQArray_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const void*)){
@@ -199,15 +209,6 @@ void FastQArray_sort(FastQArray* array, int(*usr_cmp_func)(const void*, const vo
 ビルド時に決定できるならどちらのソートアルゴリズムを使用するかはマクロで切り替え、
 実行時でないと判断がつかないならif文や、関数の引数にソート関数のポインタを渡すようにするのでも
 良いでしょう。
-
-> **Note**
-> 関数シグニチャ: 通常は関数は「関数名」と「引数の数と種類」、そして「返り値」の3つセットで定義されます。
-> ただし、関数を関数のポインタを介して利用する場合は、関数名は違っていても引き数の数と種類と返り値が
-> 同じ関数同士は「同じ型の関数」とみなして同じように呼び出すことができます。このような関数のポインタの定義は
-> int(*usr_cmp_func)(const void* p1, const void* p2)のように書かれ、
-> usr_cmp_funcが関数のポインタ、int(*)(const void*, const void*)の部分は
-> 関数のシグニチャ(英語: function prototype)と呼ばれます。要するにシグニチャは関数から名前を抜いた
-> 「引数の数と種類(入力)」と「返り値(出力)」のみで決定される「関数の型」と考えていただければ良いと思います。
 
 ただし、ちょっと困ったことに標準ライブラリのqsort()関数は比較関数に比較対象データの
 ポインタを渡してくるので、実際のポインタをソートするコードは以下のようになります。
