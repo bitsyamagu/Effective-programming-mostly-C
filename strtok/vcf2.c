@@ -13,6 +13,8 @@ typedef struct {
     char* raw_info;
     char* format;
     char* raw_genotypes;
+    int info_count;
+    char** info;
 } VCFEntry;
 
 int count_info(char* p){
@@ -32,7 +34,10 @@ char** parse_info(char* raw_info){
    int count = 0;
    char* token = infos[0] = strtok(p, ";");
    for(int i = 1; i<100; i++){
-       infos[count++] = strtok(NULL, ";");
+       token = infos[count++] = strtok(NULL, ";");
+       if(token == NULL){
+           break;
+       }
    }
    char** list = (char**)malloc(count * sizeof(char*));
    memcpy(list, infos, count*sizeof(char*));
@@ -48,10 +53,8 @@ void dump_vcf_ent(VCFEntry* ent){
     fprintf(stderr, "filter: %s\n", ent->filter);
     fprintf(stderr, "raw_info: %s\n", ent->raw_info);
 
-    int info_count = count_info(ent->raw_info);
-    char** info = parse_info(ent->raw_info);
-    for(int i = 0; i<info_count; i++){
-        fprintf(stderr, "  info: %s", info[i]);
+    for(int i = 0; i<ent->info_count; i++){
+        fprintf(stderr, "  info: %s", ent->info[i]);
     }
     fprintf(stderr, "\n");
 
@@ -88,11 +91,12 @@ VCFEntry* parse_vcf_line(char* buf){
              break;
            case 7:
              ent->raw_info = token;
+             ent->info_count = count_info(token);
+             ent->info = parse_info(token);
              break;
            case 8:
              ent->format = token;
              ent->raw_genotypes = ent->format + strlen(token) + 1;
-             dump_vcf_ent(ent);
              break;
            default:
              fprintf(stderr, "unknown column %s\n", token);
@@ -116,6 +120,7 @@ int main(int argc, char** argv){
         }
         VCFEntry* vent = parse_vcf_line(buf);
         // do something on vent
+        dump_vcf_ent(vent);
         free(vent);
     }
     fclose(fp);
